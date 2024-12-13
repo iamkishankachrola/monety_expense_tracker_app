@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         title:  Row(
           children: [
             Image.asset("assets/images/monety_logo.jpg",width: 30,height: 30,),
-            Text("Monety",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+            const Text("Monety",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
           ],
         ),
         actions: const [

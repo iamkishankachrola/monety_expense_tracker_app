@@ -2,7 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/login_page.dart';
 
-class SignUpPage extends StatelessWidget{
+class SignUpPage extends StatefulWidget{
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  bool check = false;
+  bool visibility = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,26 +70,34 @@ class SignUpPage extends StatelessWidget{
             TextField(
               keyboardType: TextInputType.visiblePassword ,
               cursorColor: const Color(0xffE78BBC),
-              obscureText: true,
+              obscureText: visibility ? false : true,
               decoration: InputDecoration(
                 enabledBorder:enableBorder(),
                 focusedBorder: focusedBorder(),
                 prefixIcon: const Icon(Icons.lock_outline_rounded,color:  Colors.grey),
-                suffixIcon: const Icon(Icons.visibility_off_outlined,color:  Colors.grey),
+                suffixIcon:  IconButton(onPressed: (){
+                  setState(() {
+                    visibility = !visibility;
+                  });
+                },
+                  icon: visibility==true ?const Icon(Icons.visibility_outlined,color: Colors.grey,) :const Icon(Icons.visibility_off_outlined,color: Colors.grey,),),
                 hintText: "Enter your password",
                 hintStyle: const TextStyle(fontSize: 16,color: Colors.grey),
               ),
             ),
             Row(
               children: [
-                Checkbox(value: true, onChanged:(value) {
+                Checkbox(value: check, onChanged:(value) {
+                  setState(() {
+                    check = value!;
+                  });
                 },activeColor:const Color(0xffE78BBC),shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),),
                 const Text("Must be at least 8 characters",style: TextStyle(color: Colors.grey,fontSize: 14 ),)
               ],
             ),
             const SizedBox(height: 20,),
             ElevatedButton(onPressed: (){
-                Navigator.push(context,MaterialPageRoute(builder: (context) => LoginPage(),));
+                Navigator.pop(context);
             },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffE78BBC),
@@ -159,7 +174,7 @@ class SignUpPage extends StatelessWidget{
                     InkWell(
                       child: const Text("Log in",style: TextStyle(color:Color(0xffE78BBC),fontSize: 14,fontWeight: FontWeight.bold)),
                       onTap: () {
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => LoginPage(),));
+                        Navigator.pop(context);
                       },
                     ),
                   ],
@@ -171,6 +186,7 @@ class SignUpPage extends StatelessWidget{
       ),
     );
   }
+
   OutlineInputBorder enableBorder(){
     return OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -180,6 +196,7 @@ class SignUpPage extends StatelessWidget{
         )
     );
   }
+
   OutlineInputBorder focusedBorder(){
     return OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),

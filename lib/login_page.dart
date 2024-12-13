@@ -8,9 +8,9 @@ class LoginPage extends StatefulWidget{
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
   bool check = false;
+  bool visibility = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,13 +56,18 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 5,),
             TextField(
               keyboardType: TextInputType.visiblePassword ,
-              obscureText: true,
+              obscureText: visibility ? false : true,
               cursorColor: const Color(0xffE78BBC),
               decoration: InputDecoration(
                 enabledBorder:enableBorder(),
                 focusedBorder: focusedBorder(),
                 prefixIcon: const Icon(Icons.lock_outline_rounded,color: Colors.grey,),
-                suffixIcon: const Icon(Icons.visibility_off_outlined,color: Colors.grey,),
+                suffixIcon:  IconButton(onPressed: (){
+                  setState(() {
+                    visibility = !visibility;
+                  });
+                },
+                    icon: visibility==true ?const Icon(Icons.visibility_outlined,color: Colors.grey,) :const Icon(Icons.visibility_off_outlined,color: Colors.grey,),),
                 hintText: "Enter your password",
                 hintStyle: const TextStyle(fontSize: 16,color: Colors.grey),
               ),
