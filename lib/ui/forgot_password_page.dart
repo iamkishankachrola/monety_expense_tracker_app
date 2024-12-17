@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:monety_expense_tracker_app/verification_page.dart';
+import 'package:monety_expense_tracker_app/ui/verification_page.dart';
 
 class ForgotPasswordPage extends StatelessWidget{
   @override

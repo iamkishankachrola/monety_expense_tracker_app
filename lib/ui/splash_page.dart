@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:monety_expense_tracker_app/login_page.dart';
+import 'package:monety_expense_tracker_app/ui/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'login_page.dart';
 
 class SplashPage extends StatefulWidget{
 
@@ -12,8 +15,14 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5),() {
-      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginPage(),));
+    Timer(const Duration(seconds: 5),() async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var getValue = prefs.getString("userId");
+      if(getValue != null){
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
+      }else {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+      }
     },);
   }
   @override

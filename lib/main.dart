@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:monety_expense_tracker_app/splash_page.dart';
-
+import 'package:monety_expense_tracker_app/ui/splash_page.dart';
 void main() {
   runApp(const MyApp());
 }

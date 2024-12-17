@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/navigation_pages/navigation_add_expense_page.dart';
 import 'package:monety_expense_tracker_app/navigation_pages/navigation_home_page.dart';
 import 'package:monety_expense_tracker_app/navigation_pages/navigation_statistic_page.dart';
+import 'package:monety_expense_tracker_app/ui/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -28,9 +30,31 @@ class _HomePageState extends State<HomePage> {
             const Text("Monety",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
           ],
         ),
-        actions: const [
-          Icon(Icons.search),
-          SizedBox(width: 20,)
+        actions: [
+          const Icon(Icons.search),
+          PopupMenuButton(
+            color: Colors.white,
+            position: PopupMenuPosition.under,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  child: const Row(
+                    children: [
+                      Icon(Icons.logout_outlined,color: Color(0xffE78BBC),),
+                      SizedBox(width: 10,),
+                      Text("Logout",style: TextStyle(color: Color(0xffE78BBC)),)
+                    ],
+                  ),
+                  onTap: () async{
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.clear();
+                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginPage(),));
+                  },)
+              ];
+            },
+          ),
+          const SizedBox(width: 5,)
         ],
         backgroundColor: Colors.white,
       ),
