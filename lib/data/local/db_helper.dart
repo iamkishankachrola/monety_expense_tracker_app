@@ -4,6 +4,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'model/expense_model.dart';
+
 class DbHelper{
   DbHelper._();
 
@@ -23,10 +25,11 @@ class DbHelper{
   static const String EXPENSE_USER_ID = "u_id";
   static const String EXPENSE_COLUMN_TITLE = "e_title";
   static const String EXPENSE_COLUMN_DESCRIPTION= "e_description";
-  static const String EXPENSE_TYPE_CREDIT = "e_credit";
-  static const String EXPENSE_TYPE_DEBIT = "e_debit";
+  static const String EXPENSE_TYPE = "e_type";
   static const String EXPENSE_COLUMN_AMOUNT = "e_amount";
   static const String EXPENSE_COLUMN_BALANCE = "e_balance";
+  static const String EXPENSE_COLUMN_CREATED_AT = "e_created_at";
+  static const String EXPENSE_COLUMN_CATEGORY_ID = "e_category_id";
 
   Future<Database> initDB() async{
     myDB = myDB ?? await openDB();
@@ -41,12 +44,12 @@ class DbHelper{
     return openDatabase(dbPath, version: 1, onCreate: (db, version) {
       print("DB : create db!!");
       db.execute("create table $TABLE_USER ( $USER_COLUMN_ID integer primary key autoincrement, $USER_COLUMN_NAME text, $USER_COLUMN_EMAIL text,  $USER_COLUMN_PASSWORD text, $USER_COLUMN_CREATED_AT text )");
-      db.execute("create table $TABLE_EXPENSE ( $EXPENSE_COLUMN_ID integer primary key autoincrement, $EXPENSE_USER_ID integer, $EXPENSE_COLUMN_TITLE text, $EXPENSE_COLUMN_DESCRIPTION text, $EXPENSE_TYPE_CREDIT integer, $EXPENSE_TYPE_DEBIT integer, $EXPENSE_COLUMN_AMOUNT integer, $EXPENSE_COLUMN_BALANCE integer)");
+      db.execute("create table $TABLE_EXPENSE ( $EXPENSE_COLUMN_ID integer primary key autoincrement, $EXPENSE_USER_ID integer, $EXPENSE_COLUMN_TITLE text, $EXPENSE_COLUMN_DESCRIPTION text, $EXPENSE_TYPE text, $EXPENSE_COLUMN_AMOUNT real, $EXPENSE_COLUMN_BALANCE real, $EXPENSE_COLUMN_CREATED_AT text, $EXPENSE_COLUMN_CATEGORY_ID integer)");
     },);
   }
   Future<bool> checkIfEmailAlreadyExists({required String email}) async{
     Database db = await initDB();
-    List<Map<String,dynamic>> data = await db.query(TABLE_USER, where: "$USER_COLUMN_EMAIL = ?" , whereArgs: [email]);
+    List<Map<String,dynamic>> data = await db.query(TABLE_USER, where: "$USER_COLUMN_EMAIL == ?" , whereArgs: [email]);
     return data.isNotEmpty;
   }
 
@@ -58,7 +61,7 @@ class DbHelper{
 
   Future<bool> authenticateUser({required String email, required String password}) async{
     Database db = await initDB();
-    List<Map<String,dynamic>> data = await db.query(TABLE_USER, where: "$USER_COLUMN_EMAIL = ? AND $USER_COLUMN_PASSWORD = ?", whereArgs: [email,password]);
+    List<Map<String,dynamic>> data = await db.query(TABLE_USER, where: "$USER_COLUMN_EMAIL == ? AND $USER_COLUMN_PASSWORD == ?", whereArgs: [email,password]);
     /// saving user in prefs
     if(data.isNotEmpty){
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -67,7 +70,23 @@ class DbHelper{
     return data.isNotEmpty;
   }
 
-  Future<List<UserModel>> fetchAllData() async{
+  Future<bool> addExpense({required ExpenseModel expenseModel})async{
+    Database db = await initDB();
+    int rowsEffected = await db.insert(TABLE_EXPENSE,expenseModel.toMap());
+    return rowsEffected>0;
+  }
+  Future<List<ExpenseModel>> fetchAllExpenseData() async{
+    Database db = await initDB();
+    List<ExpenseModel> expenseList = [ ];
+    List<Map<String,dynamic>> allExpense = await db.query(TABLE_EXPENSE);
+    for(Map<String,dynamic> eachData in allExpense){
+      ExpenseModel eachExpense = ExpenseModel.fromMap(eachData);
+      expenseList.add(eachExpense);
+    }
+    return expenseList;
+  }
+
+  Future<List<UserModel>> fetchAllUserData() async{
     Database db = await initDB();
     List<UserModel> userList = [ ];
     List<Map<String,dynamic>> allNotes = await db.query(TABLE_USER);

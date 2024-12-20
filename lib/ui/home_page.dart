@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:monety_expense_tracker_app/navigation_pages/navigation_add_expense_page.dart';
-import 'package:monety_expense_tracker_app/navigation_pages/navigation_home_page.dart';
-import 'package:monety_expense_tracker_app/navigation_pages/navigation_statistic_page.dart';
 import 'package:monety_expense_tracker_app/ui/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'navigation_pages/navigation_add_expense_page.dart';
+import 'navigation_pages/navigation_home_page.dart';
+import 'navigation_pages/navigation_statistic_page.dart';
 
 class HomePage extends StatefulWidget{
   @override

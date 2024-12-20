@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:monety_expense_tracker_app/data/local/bloc/expense_bloc.dart';
 import 'package:monety_expense_tracker_app/ui/splash_page.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(BlocProvider(create: (context) => ExpenseBloc(),child: const MyApp(),));
 }
 
 class MyApp extends StatelessWidget {

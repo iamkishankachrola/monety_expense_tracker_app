@@ -42,7 +42,7 @@ class ResetPasswordPage extends StatelessWidget {
                 suffixIcon: const Icon(
                   Icons.visibility_off_outlined, color: Colors.grey,),
                 hintText: "New password",
-                hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+                hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 15,),
@@ -60,7 +60,7 @@ class ResetPasswordPage extends StatelessWidget {
                   suffixIcon: const Icon(
                   Icons.visibility_off_outlined, color: Colors.grey,),
                    hintText: "Confirm password",
-                  hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+                  hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 30,),

@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                 focusedBorder: focusedBorder(),
                 prefixIcon: const Icon(Icons.email_outlined,color: Colors.grey,),
                 hintText: "Enter your email",
-                hintStyle: const TextStyle(fontSize: 16,color: Colors.grey),
+                hintStyle: const TextStyle(fontSize: 14,color: Colors.grey),
               ),
             ),
             const SizedBox(height: 15,),
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
                     icon: visibility==true ?const Icon(Icons.visibility_outlined,color: Colors.grey,) :const Icon(Icons.visibility_off_outlined,color: Colors.grey,),),
                 hintText: "Enter your password",
-                hintStyle: const TextStyle(fontSize: 16,color: Colors.grey),
+                hintStyle: const TextStyle(fontSize: 14,color: Colors.grey),
               ),
             ),
             Row(

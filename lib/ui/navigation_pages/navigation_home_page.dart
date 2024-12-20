@@ -1,7 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:monety_expense_tracker_app/data/local/bloc/expense_bloc.dart';
+import 'package:monety_expense_tracker_app/data/local/bloc/expense_event.dart';
+import 'package:monety_expense_tracker_app/data/local/db_helper.dart';
+import 'package:monety_expense_tracker_app/data/local/model/expense_model.dart';
+import 'package:monety_expense_tracker_app/domain/app_constants.dart';
+import '../../data/local/model/user_model.dart';
 
 class NavigationHomePage extends StatefulWidget {
+
   @override
   State<NavigationHomePage> createState() => _NavigationHomePageState();
 }
@@ -41,16 +50,23 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
     var daysExpenseList = [
       {
         "date": "Tuesday, 14",
-        "totalAmount": "-\$1380",
+        "totalAmount": "-₹1380",
       },
-      {
-        "date": "Monday, 13",
-        "totalAmount": "-\$60",
-      }
-  ];
 
+  ];
+    List<ExpenseModel> expenseList = [ ];
+    List<UserModel> userList = [ ];
+    DbHelper dbHelper = DbHelper.getInstance();
+    DateFormat dateFormat = DateFormat.jm();
+
+    @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseBloc>().add(GetAllExpenseEvent());
+  }
   @override
   Widget build(BuildContext context) {
+      expenseList =context.watch<ExpenseBloc>().state.expenseList;
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -71,14 +87,8 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Morning",
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                      Text(
-                        "Virat",
-                        style: TextStyle(fontSize: 14),
-                      ),
+                      Text("Morning", style: TextStyle(fontSize: 14, color: Colors.grey),),
+                      Text("Virat", style: TextStyle(fontSize: 14),),
                     ],
                   ),
                 ],
@@ -143,7 +153,7 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                         height: 5,
                       ),
                       const Text(
-                        "\$3,734",
+                        "₹3,734",
                         style: TextStyle(
                             fontSize: 34,
                             fontWeight: FontWeight.bold,
@@ -162,7 +172,7 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                                 color: const Color(0xffDB6565)),
                             child: const Center(
                                 child: Text(
-                              "+\$240",
+                              "+₹240",
                               style:
                                   TextStyle(fontSize: 14, color: Colors.white),
                             )),
@@ -201,7 +211,7 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
             width: double.infinity,
             height: 450,
             child: ListView.builder(
-              itemCount: daysExpenseList.length,
+              itemCount: expenseList.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -222,13 +232,13 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  daysExpenseList[index]["date"].toString(),
+                                  expenseList[index].createdAt,
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  daysExpenseList[index]["totalAmount"].toString(),
+                                  expenseList[index].balance.toString(),
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold),
@@ -254,7 +264,7 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                             child: SizedBox(
                               width: double.infinity,
                               child: ListView.builder(
-                                itemCount: itemsExpenseList.length,
+                                itemCount: expenseList.length,
                                 itemBuilder: (context, index) {
                                   return ListTile(
                                     leading: Container(
@@ -266,27 +276,14 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                                           color: const Color(0xffE6E9F8)),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8),
-                                        child: Image.asset(
-                                          itemsExpenseList[index]["img"].toString(),
-                                        ),
+                                        child: Image.asset(AppConstants.categoryList[expenseList[index].categoryId -1].imgPath),
                                       ),
                                     ),
-                                    title: Text(
-                                      itemsExpenseList[index]["title"].toString(),
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                    subtitle: Text(
-                                      itemsExpenseList[index]
-                                          ["description"].toString(),
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                    ),
-                                    trailing: Text(
-                                      itemsExpenseList[index]["amount"].toString(),
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xffDB6565)),
-                                    ),
+                                    title: Text(expenseList[index].title, style: const TextStyle(fontSize: 14),),
+                                    subtitle: Text(expenseList[index].description, style: const TextStyle(fontSize: 14, color: Colors.grey),),
+                                    trailing:expenseList[index].expenseType=="Credit" ?
+                                    Text("+ ₹${expenseList[index].amount.toString()}", style: const TextStyle(fontSize: 14, color: Colors.green),)
+                                        :Text("- ₹${expenseList[index].amount.toString()}", style: const TextStyle(fontSize: 14, color: Color(0xffDB6565)),),
                                   );
                                 },
                               ),
