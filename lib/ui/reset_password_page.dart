@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/ui/login_page.dart';
 
 class ResetPasswordPage extends StatelessWidget {
+  const ResetPasswordPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

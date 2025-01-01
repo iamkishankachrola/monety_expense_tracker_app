@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/ui/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +6,7 @@ import 'navigation_pages/navigation_home_page.dart';
 import 'navigation_pages/navigation_statistic_page.dart';
 
 class HomePage extends StatefulWidget{
+  const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -15,9 +15,9 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
   List<Widget> navigationPage = [
-    NavigationHomePage(),
-    NavigationAddExpensePage(),
-    NavigationStatisticPage()
+    const NavigationHomePage(),
+    const NavigationAddExpensePage(),
+    const NavigationStatisticPage()
   ];
   @override
   Widget build(BuildContext context) {

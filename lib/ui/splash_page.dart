@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
 
 class SplashPage extends StatefulWidget{
-
+  const SplashPage({super.key});
   @override
   State<SplashPage> createState() => _SplashPageState();
 }
@@ -19,9 +19,9 @@ class _SplashPageState extends State<SplashPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var getValue = prefs.getString("userId");
       if(getValue != null){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage(),));
       }else {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage(),));
       }
     },);
   }

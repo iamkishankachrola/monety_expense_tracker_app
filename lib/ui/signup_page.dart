@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/data/local/db_helper.dart';
 import 'package:monety_expense_tracker_app/data/local/model/user_model.dart';
 
 class SignUpPage extends StatefulWidget{
+  const SignUpPage({super.key});
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }

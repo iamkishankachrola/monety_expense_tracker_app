@@ -1,13 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monety_expense_tracker_app/data/local/db_helper.dart';
 import 'package:monety_expense_tracker_app/data/local/model/user_model.dart';
 import 'package:monety_expense_tracker_app/ui/forgot_password_page.dart';
 import 'package:monety_expense_tracker_app/ui/signup_page.dart';
-
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget{
+  const LoginPage({super.key});
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
