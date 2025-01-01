@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title:  Row(
           children: [
-            Image.asset("assets/images/monety_logo.jpg",width: 30,height: 30,),
+            Image.asset("assets/images/monety_logo.png",width: 30,height: 30,),
             const Text("Monety",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
           ],
         ),

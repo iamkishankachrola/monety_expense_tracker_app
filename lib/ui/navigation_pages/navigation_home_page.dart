@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +5,10 @@ import 'package:monety_expense_tracker_app/data/local/bloc/expense_bloc.dart';
 import 'package:monety_expense_tracker_app/data/local/bloc/expense_event.dart';
 import 'package:monety_expense_tracker_app/data/local/db_helper.dart';
 import 'package:monety_expense_tracker_app/data/local/model/expense_model.dart';
+import 'package:monety_expense_tracker_app/data/local/model/filter_expense_model.dart';
 import 'package:monety_expense_tracker_app/domain/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../data/local/bloc/expense_state.dart';
 import '../../data/local/model/user_model.dart';
 
 class NavigationHomePage extends StatefulWidget {
@@ -16,8 +18,9 @@ class NavigationHomePage extends StatefulWidget {
 }
 
 class _NavigationHomePageState extends State<NavigationHomePage> {
-  List<String> durationList = ["Today", "This week", "This month", "This year"];
-  String selectedItem = "This month";
+  List<String> durationList = ["Date wise", "Month wise", "Year wise"];
+  String selectedItem = "Date wise";
+  String name = " ";
     var itemsExpenseList = [
 
       {
@@ -55,18 +58,28 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
 
   ];
     List<ExpenseModel> expenseList = [ ];
+    List<FilterExpenseModel> filterData = [ ];
     List<UserModel> userList = [ ];
     DbHelper dbHelper = DbHelper.getInstance();
-    DateFormat dateFormat = DateFormat.jm();
+    DateFormat dateFormat = DateFormat.yMMMd();
+    double balance=0;
 
     @override
   void initState() {
     super.initState();
     context.read<ExpenseBloc>().add(GetAllExpenseEvent());
+    getName();
   }
+
+  void getName() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    name = prefs.getString("userName") ?? "User";
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-      expenseList =context.watch<ExpenseBloc>().state.expenseList;
+    //   expenseList =context.watch<ExpenseBloc>().state.expenseList;
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -84,11 +97,11 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                   const SizedBox(
                     width: 10,
                   ),
-                  const Column(
+                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Morning", style: TextStyle(fontSize: 14, color: Colors.grey),),
-                      Text("Virat", style: TextStyle(fontSize: 14),),
+                      const Text("Morning", style: TextStyle(fontSize: 14, color: Colors.grey),),
+                      Text(name, style: const TextStyle(fontSize: 14),),
                     ],
                   ),
                 ],
@@ -114,6 +127,19 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                         .map((element) => DropdownMenuItem(
                               value: element,
                               child: Text(element),
+                              onTap: () {
+                               setState(() {
+                                 if(element == "Date wise"){
+                                   dateFormat = DateFormat.yMMMd();
+                                 }else if(element == "Month wise"){
+                                   dateFormat = DateFormat.yMMMM();
+                                 }else if(element == "Year wise"){
+                                   dateFormat = DateFormat.y();
+                                 }else{
+                                   dateFormat = DateFormat.yMMMd();
+                                 }
+                               });
+                              },
                             ))
                         .toList(),
                     onChanged: (value) => setState(() {
@@ -124,9 +150,7 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
               )
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20,),
           Container(
             width: double.infinity,
             height: 150,
@@ -142,26 +166,19 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        "Expense total",
-                        style: TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      const Text(
-                        "₹3,734",
-                        style: TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 20,),
+                      const Text("Expense total", style: TextStyle(fontSize: 14, color: Colors.white),),
+                      const SizedBox(height: 5,),
+                      BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, state) {
+                        if(state is ExpenseLoadedState) {
+                          balance = getBalance(expenseList: state.expenseList);
+                          return balance < 0 ? Text("-₹${-balance}", style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white),)
+                          : Text("+₹$balance", style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white),);
+                        }else{
+                          return const Text(" ");
+                        }
+                      },),
+                      const SizedBox(height: 5,),
                       Row(
                         children: [
                           Container(
@@ -186,16 +203,10 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20,),
                     ],
                   ),
-                  Image.asset(
-                    "assets/images/expense_img.png",
-                    width: 170,
-                    height: 170,
-                  )
+                  Image.asset("assets/images/expense_img.png", width: 170, height: 170,)
                 ],
               ),
             ),
@@ -207,98 +218,148 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
             "Expense List",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
-            width: double.infinity,
-            height: 450,
-            child: ListView.builder(
-              itemCount: expenseList.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: const Color(0xffE0E9F7), width: 2)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  expenseList[index].createdAt,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
+        BlocBuilder<ExpenseBloc, ExpenseState>(builder: (_, state){
+        if(state is ExpenseLoadingState){
+        return const Center(child: CircularProgressIndicator(),);
+        } else if(state is ExpenseErrorState){
+        return Center(child: Text(state.errorMsg),);
+        } else if(state is ExpenseLoadedState) {
+          filterDataDateWise(expenseList: state.expenseList);
+          return filterData.isNotEmpty ? ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filterData.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: const Color(0xffE0E9F7), width: 2)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text((filterData[index].date),
+                                style: const TextStyle(fontSize: 14,
+                                    fontWeight: FontWeight.bold),),
+                              Text(filterData[index].totalAmount>=0 ? "-₹${filterData[index].totalAmount.toString()}" : "+₹${(-filterData[index].totalAmount).toString()}" ,
+                                style: const TextStyle(fontSize: 14,
+                                    fontWeight: FontWeight.bold),)
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Container(
+                            width: double.infinity,
+                            height: 2,
+                            color: const Color(0xffE0E9F7),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        ListView.builder(
+                          itemCount: filterData[index].allExpense.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, childIndex) {
+                            return ListTile(
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                    BorderRadius.circular(3),
+                                    color: const Color(0xffE6E9F8)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Image.asset(AppConstants
+                                      .categoryList[filterData[index].allExpense[childIndex]
+                                      .categoryId - 1].imgPath),
                                 ),
-                                Text(
-                                  expenseList[index].balance.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Container(
-                              width: double.infinity,
-                              height: 2,
-                              color: const Color(0xffE0E9F7),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Flexible(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ListView.builder(
-                                itemCount: expenseList.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    leading: Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                          color: const Color(0xffE6E9F8)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Image.asset(AppConstants.categoryList[expenseList[index].categoryId -1].imgPath),
-                                      ),
-                                    ),
-                                    title: Text(expenseList[index].title, style: const TextStyle(fontSize: 14),),
-                                    subtitle: Text(expenseList[index].description, style: const TextStyle(fontSize: 14, color: Colors.grey),),
-                                    trailing:expenseList[index].expenseType=="Credit" ?
-                                    Text("+ ₹${expenseList[index].amount.toString()}", style: const TextStyle(fontSize: 14, color: Colors.green),)
-                                        :Text("- ₹${expenseList[index].amount.toString()}", style: const TextStyle(fontSize: 14, color: Color(0xffDB6565)),),
-                                  );
-                                },
                               ),
-                            ),
-                          )
-                        ],
-                      ),
+                              title: Text(filterData[index].allExpense[childIndex].title,
+                                style: const TextStyle(fontSize: 14),),
+                              subtitle: Text(
+                                filterData[index].allExpense[childIndex].description,
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey),),
+                              trailing: filterData[index].allExpense[childIndex].expenseType ==
+                                  "Credit" ?
+                              Text("+₹${filterData[index].allExpense[childIndex].amount
+                                  .toString()}", style: const TextStyle(
+                                  fontSize: 14, color: Colors.green),)
+                                  : Text("-₹${filterData[index].allExpense[childIndex].amount
+                                  .toString()}", style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xffE78BBC)),),
+                            );
+                          },
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
-          )
+                ),
+              );
+            },
+          ) : const SizedBox(
+              width: double.infinity,
+              height: 420,
+              child: Center(child: Text("No expense yet!!",style: TextStyle(fontSize: 20),),));
+        }else{
+          return Container();
+        }})
         ],
       ),
     );
+  }
+
+  void filterDataDateWise({required List<ExpenseModel> expenseList}){
+      filterData.clear();
+      List<String> uniqueDates = [ ];
+      for(ExpenseModel eachExp in expenseList){
+        String eachDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.createdAt)));
+        if(!uniqueDates.contains(eachDate)){
+          uniqueDates.add(eachDate);
+        }
+      }
+      for(String eachDate in uniqueDates){
+        double totalAmount = 0;
+        List<ExpenseModel> eachDateExp = [ ];
+        for(ExpenseModel eachExp in expenseList){
+              String expDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.createdAt)));
+              if(eachDate == expDate){
+                eachDateExp.add(eachExp);
+                if(eachExp.expenseType == "Debit"){
+                  totalAmount = totalAmount + eachExp.amount;
+                }else{
+                  totalAmount = totalAmount - eachExp.amount;
+                }
+              }
+        }
+        filterData.add(FilterExpenseModel(date: eachDate, totalAmount: totalAmount, allExpense: eachDateExp));
+      }
+  }
+  double getBalance({required List<ExpenseModel> expenseList}){
+      double balance = 0;
+      for(ExpenseModel expenseModel in expenseList){
+        if(expenseModel.expenseType=="Debit"){
+          balance = balance - expenseModel.balance;
+        }else{
+          balance = balance + expenseModel.balance;
+        }
+      }
+      return balance;
   }
 }

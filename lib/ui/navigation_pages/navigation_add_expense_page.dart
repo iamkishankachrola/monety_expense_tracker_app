@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:monety_expense_tracker_app/data/local/bloc/expense_bloc.dart';
 import 'package:monety_expense_tracker_app/data/local/bloc/expense_event.dart';
 import 'package:monety_expense_tracker_app/data/local/model/expense_model.dart';
@@ -20,7 +21,8 @@ class _NavigationAddExpensePageState extends State<NavigationAddExpensePage> {
   List<String> expenseTypeList = ["Debit", "Credit", "Loan", "Lend", "Borrow"];
   String initialExpenseType = "Debit";
   int selectedCatIndex = -1;
-
+  DateTime? selectedDate;
+  DateFormat dateFormat = DateFormat.yMMMd();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +155,23 @@ class _NavigationAddExpensePageState extends State<NavigationAddExpensePage> {
                     ) : const Center(child: Text("Choose a Category",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),)),
                 const SizedBox(height: 20,),
                 ElevatedButton(onPressed: () async{
-                  if(titleController.text.isNotEmpty && descriptionController.text.isNotEmpty && amountController.text.isNotEmpty && selectedCatIndex >-1) {
+                  selectedDate = await showDatePicker(context: context,
+                      firstDate: DateTime(2023),
+                      lastDate: DateTime.now()) ;
+                      setState(() {});
+                },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffE78BBC),
+                        elevation: 3,
+                        shadowColor: Colors.black,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                    ),
+                    child:Text(selectedDate != null ? dateFormat.format(selectedDate!) : "Choose a date",style: const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),)),
+                const SizedBox(height: 20,),
+                ElevatedButton(onPressed: () async{
+                  if(titleController.text.isNotEmpty && descriptionController.text.isNotEmpty && amountController.text.isNotEmpty && selectedCatIndex >-1 && selectedDate.toString().isNotEmpty) {
+                    double amount = double.parse(amountController.text);
                     SharedPreferences prefs =await SharedPreferences.getInstance();
                     String uId = prefs.getString("userId") ?? " ";
                     context.read<ExpenseBloc>().add(AddExpenseEvent(expenseModel: ExpenseModel(
@@ -162,8 +180,8 @@ class _NavigationAddExpensePageState extends State<NavigationAddExpensePage> {
                         description: descriptionController.text,
                         expenseType: initialExpenseType,
                         amount: double.parse(amountController.text),
-                        balance: 0,
-                        createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+                        balance: amount,
+                        createdAt: selectedDate!.millisecondsSinceEpoch.toString(),
                         categoryId: AppConstants.categoryList[selectedCatIndex].id)));
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Expense added successfully!!"),backgroundColor: Colors.green,));
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NavigationHomePage(),));

@@ -30,8 +30,5 @@ class AppConstants{
       CategoryModel(id: 26, name: "Newspaper Subscription", imgPath: "assets/category_items_img/newspaper.png"),
       CategoryModel(id: 27, name: "Maintenance Expense", imgPath: "assets/category_items_img/maintenance.png"),
       CategoryModel(id: 28, name: "Other Expense", imgPath: "assets/category_items_img/budget.png"),
-
-
-
     ];
 }

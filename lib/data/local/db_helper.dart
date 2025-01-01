@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:monety_expense_tracker_app/data/local/model/user_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -5,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'model/expense_model.dart';
+import 'model/filter_expense_model.dart';
 
 class DbHelper{
   DbHelper._();
@@ -47,6 +49,7 @@ class DbHelper{
       db.execute("create table $TABLE_EXPENSE ( $EXPENSE_COLUMN_ID integer primary key autoincrement, $EXPENSE_USER_ID integer, $EXPENSE_COLUMN_TITLE text, $EXPENSE_COLUMN_DESCRIPTION text, $EXPENSE_TYPE text, $EXPENSE_COLUMN_AMOUNT real, $EXPENSE_COLUMN_BALANCE real, $EXPENSE_COLUMN_CREATED_AT text, $EXPENSE_COLUMN_CATEGORY_ID integer)");
     },);
   }
+
   Future<bool> checkIfEmailAlreadyExists({required String email}) async{
     Database db = await initDB();
     List<Map<String,dynamic>> data = await db.query(TABLE_USER, where: "$USER_COLUMN_EMAIL == ?" , whereArgs: [email]);
@@ -66,6 +69,8 @@ class DbHelper{
     if(data.isNotEmpty){
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString("userId", data[0][USER_COLUMN_ID].toString());
+      prefs.setString("userName", data[0][USER_COLUMN_NAME]);
+
     }
     return data.isNotEmpty;
   }
@@ -97,16 +102,33 @@ class DbHelper{
     return userList;
   }
 
-  /*Future<bool> updateData(UserModel userModel) async{
-    Database db = await initDB();
-    int rowsEffected = await db.update(TABLE_USER,userModel.toMap(), where: "$USER_COLUMN_ID= ${userModel.id}");
-    return rowsEffected>0;
+  List<FilterExpenseModel> filterDataDateWise({required List<ExpenseModel> expenseList}){
+    List<FilterExpenseModel> filterData = [ ];
+    DateFormat dateFormat = DateFormat.d();
+    filterData.clear();
+    List<String> uniqueDates = [ ];
+    for(ExpenseModel eachExp in expenseList){
+      String eachDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.createdAt)));
+      if(!uniqueDates.contains(eachDate)){
+        uniqueDates.add(eachDate);
+      }
+    }
+    for(String eachDate in uniqueDates){
+      double totalAmount = 0;
+      List<ExpenseModel> eachDateExp = [ ];
+      for(ExpenseModel eachExp in expenseList){
+        String expDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(int.parse(eachExp.createdAt)));
+        if(eachDate == expDate){
+          eachDateExp.add(eachExp);
+          if(eachExp.expenseType == "Debit"){
+            totalAmount = totalAmount + eachExp.amount;
+          }else{
+            totalAmount = totalAmount - eachExp.amount;
+          }
+        }
+      }
+      filterData.add(FilterExpenseModel(date: eachDate, totalAmount: totalAmount, allExpense: eachDateExp));
+    }
+    return filterData ;
   }
-
-  Future<bool> deleteData({required int id}) async{
-    Database db = await initDB();
-    int rowsEffected = await db.delete(TABLE_USER,where: "$USER_COLUMN_ID = $id" );
-    return rowsEffected>0;
-  }*/
-
 }

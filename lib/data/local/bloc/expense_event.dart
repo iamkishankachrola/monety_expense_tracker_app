@@ -6,3 +6,7 @@ class AddExpenseEvent extends ExpenseEvent{
   AddExpenseEvent({required this.expenseModel});
 }
 class GetAllExpenseEvent extends ExpenseEvent{}
+class FilterDataDateWiseEvent extends ExpenseEvent{
+  List<ExpenseModel> expenseList;
+  FilterDataDateWiseEvent({required this.expenseList});
+}
