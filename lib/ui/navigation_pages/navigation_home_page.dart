@@ -21,48 +21,10 @@ class _NavigationHomePageState extends State<NavigationHomePage> {
   List<String> durationList = ["Date wise", "Month wise", "Year wise"];
   String selectedItem = "Date wise";
   String name = " ";
-    var itemsExpenseList = [
-
-      {
-        "img": "assets/images/shopping_cart.png",
-        "title": "Shop",
-        "description": "Buy new clothes",
-        "amount": "-\$90",
-      },
-      {
-        "img": "assets/images/shopping_cart.png",
-        "title": "Electronic",
-        "description": "Buy new iphone 14",
-        "amount": "-\$1290",
-      },
-
-
-      {
-        "img": "assets/images/shopping_cart.png",
-        "title": "Transportation",
-        "description": "Trip to Malang",
-        "amount": "-\$60",
-      },
-      {
-        "img": "assets/images/shopping_cart.png",
-        "title": "Shop",
-        "description": "Buy new shoes",
-        "amount": "-\$100",
-      },
-  ];
-    var daysExpenseList = [
-      {
-        "date": "Tuesday, 14",
-        "totalAmount": "-₹1380",
-      },
-
-  ];
-    List<ExpenseModel> expenseList = [ ];
-    List<FilterExpenseModel> filterData = [ ];
-    List<UserModel> userList = [ ];
-    DbHelper dbHelper = DbHelper.getInstance();
-    DateFormat dateFormat = DateFormat.yMMMd();
-    double balance=0;
+  List<FilterExpenseModel> filterData = [ ];
+  DbHelper dbHelper = DbHelper.getInstance();
+  DateFormat dateFormat = DateFormat.yMMMd();
+  double balance=0;
 
     @override
   void initState() {
