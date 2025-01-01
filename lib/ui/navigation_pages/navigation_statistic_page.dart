@@ -1,5 +1,4 @@
 import 'package:d_chart/d_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +10,7 @@ import '../../data/local/bloc/expense_bloc.dart';
 import '../../data/local/bloc/expense_state.dart';
 
 class NavigationStatisticPage extends StatefulWidget {
+  const NavigationStatisticPage({super.key});
   @override
   State<NavigationStatisticPage> createState() =>
       _NavigationStatisticPageState();

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +9,7 @@ import 'package:monety_expense_tracker_app/ui/navigation_pages/navigation_home_p
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationAddExpensePage extends StatefulWidget {
+  const NavigationAddExpensePage({super.key});
   @override
   State<NavigationAddExpensePage> createState() => _NavigationAddExpensePageState();
 }
@@ -184,7 +184,7 @@ class _NavigationAddExpensePageState extends State<NavigationAddExpensePage> {
                         createdAt: selectedDate!.millisecondsSinceEpoch.toString(),
                         categoryId: AppConstants.categoryList[selectedCatIndex].id)));
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Expense added successfully!!"),backgroundColor: Colors.green,));
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NavigationHomePage(),));
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const NavigationHomePage(),));
                     }else{
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all required blanks!!"),backgroundColor: Colors.red,));
                   }

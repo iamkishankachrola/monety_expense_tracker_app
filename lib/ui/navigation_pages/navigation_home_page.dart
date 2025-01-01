@@ -9,10 +9,9 @@ import 'package:monety_expense_tracker_app/data/local/model/filter_expense_model
 import 'package:monety_expense_tracker_app/domain/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/local/bloc/expense_state.dart';
-import '../../data/local/model/user_model.dart';
 
 class NavigationHomePage extends StatefulWidget {
-
+  const NavigationHomePage({super.key});
   @override
   State<NavigationHomePage> createState() => _NavigationHomePageState();
 }
